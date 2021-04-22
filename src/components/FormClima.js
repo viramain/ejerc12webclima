@@ -2,35 +2,47 @@ import React, { Fragment } from 'react';
 import { useEffect,useState } from "react";
 import MuestraClima from './MuestraClima';
 import Spinner from "./Spinner";
-import Button from 'react-bootstrap/Button';
 
 const FormClima = () => {
+    // guarda respuesta de la API
     const [Clima, setClima] = useState({});
-    const [ubicacion, setUbicacion] = useState('Salta');
+
+    const [ubicacion, setUbicacion] = useState('San Miguel de Tucuman');
     const [pais, setPais] = useState('Argentina');
     const [cargando, setCargando] = useState(false);
 
-    useEffect(() => {consultarAPI();}, [ubicacion,pais]);
-    // useEffect(() => {consultarAPI();}, []);
+    // useEffect(() => {consultarAPI();}, [ubicacion,pais]);
+    useEffect(() => {consultarAPI();}, [pais]);
 
     const consultarAPI = async () => {
         console.log("en consultar API")
         // mostrar spinner
         setCargando(true);
-        // api.openweathermap.org/data/2.5/weather?q=London,uk&APPID=e2040a955c1c51f570569f5248e829b9
-    
-        const respuesta = await fetch(`https://api.openweathermap.org/data/2.5/weather?q=${ubicacion+','+pais}&lang=es&units=metric&APPID=e2040a955c1c51f570569f5248e829b9`);
+        // consulta a API
+        const respuesta = await fetch(`https://api.openweathermap.org/data/2.5/weather?q=${ubicacion}&country=${pais}&lang=es&units=metric&APPID=e2040a955c1c51f570569f5248e829b9`);
+        
+        // como pregunto si respuesta es distinta de ERROR???????
+
         // extraigo del resultado de la API, sólo el atributo MAIN 
         const {main} = await respuesta.json();
         console.log(main);
+        // const {main,name,sys} = await respuesta.json();
+        // console.log(main);
+        // console.log(name);
+        // console.log(sys);
+        // const climaapi = {temp:main,ciudad:name,pais:sys}
 
         // const resultado = await respuesta.json();
-        // console.log(resultado[0]);
+        // console.log('Resultado:'+ resultado);
+        // console.log(resultado);
+        // console.log(resultado.main);
+        // console.log(resultado.sys.country);
+        // console.log(resultado.wheater.description);
         
         // para que muestre un poco mas de tiempo el spinner se usa settimeout
         setTimeout(() => {
             setClima(main);
-            // setClima(resultado);
+            // setClima(climaapi);
             setCargando(false);
         }, 3000);
     };
@@ -42,19 +54,15 @@ const FormClima = () => {
     return (
         <Fragment>
         <section className="container shadow text-center py-3 w-75">
-            <form className="mx-5 text-center" onSubmit={consultarAPI}>
+            <form className="mx-5 text-center">
                 <div className="my-3 d-flex">
                     <label className="form-label lead fw-bold">Ubicación:</label>
-                    <input type='text'className="form-control lead fw-bold ml-2" onChange={(e) => setUbicacion(e.target.value)}></input>
+                    <input type='text'className="form-control lead fw-bold ml-2"  onChange={(e) => setUbicacion(e.target.value)}></input>
                 </div>
                 <div className="my-3 d-flex">
                     <label className="form-label lead fw-bold">País:</label>
-                    <input type='text'className="form-control lead fw-bold ml-2" onChange={(e) => setPais(e.target.value)}></input>
+                    <input type='text'className="form-control lead fw-bold ml-2"  onChange={(e) => setPais(e.target.value)}></input>
                 </div>
-                
-                <Button variant="secondary" type='submit' block className='mb-3'>
-                    Consultar
-                </Button>
             </form>    
         </section>
 
